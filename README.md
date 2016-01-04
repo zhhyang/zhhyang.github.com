@@ -1,16 +1,14 @@
-咖啡兔
+没事找抽001
 =======
 
-博客源码：[http://www.kafeitu.me](http://www.kafeitu.me)
+博客源码：[http://zidaneaa.github.io/](http://zidaneaa.github.io/)
 
 使用Github + Jekyll + Markdown。
 
 博客主题：
 ====
 
-最初版本来源于：[https://github.com/mbleigh/mbleigh.github.com](https://github.com/mbleigh/mbleigh.github.com)
-
-后经蒋鑫修改：[https://github.com/gotgit/gotgit.github.com](https://github.com/gotgit/gotgit.github.com)
+版本来源于咖啡兔：[http://www.kafeitu.me](http://www.kafeitu.me)
 
 
 插件配置：
