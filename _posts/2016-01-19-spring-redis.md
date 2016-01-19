@@ -53,6 +53,9 @@ redis是一个key-value存储系统。和Memcached类似，它支持存储的val
 
 ## 配置xml ##
 
+
+	<context:component-scan base-package="com.github.freeman.redis" />
+
     <!-- redis连接池的配置 -->
     <bean id="jedisPoolConfig" class="redis.clients.jedis.JedisPoolConfig">
         <property name="maxIdle" value="${redis.pool.maxIdle}" />
