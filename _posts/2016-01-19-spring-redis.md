@@ -10,22 +10,32 @@ tags:
 > 本文介绍了如何在Spring中配置redis，下篇文章将通过Spring中AOP的思想，将缓存的方法切入到有需要进入缓存的类或方法前面
 
 # Redis介绍 #
+
 ## 什么是Redis？ ##
 redis是一个key-value存储系统。和Memcached类似，它支持存储的value类型相对更多，包括string(字符串)、list(链表)、set(集合)、zset(sorted set --有序集合)和hash（哈希类型）。这些数据类型都支持push/pop、add/remove及取交集并集和差集及更丰富的操作，而且这些操作都是原子性的。在此基础上，redis支持各种不同方式的排序。与memcached一样，为了保证效率，数据都是缓存在内存中。区别的是redis会周期性的把更新的数据写入磁盘或者把修改操作写入追加的记录文件，并且在此基础上实现了master-slave(主从)同步。
+
 ## 它有什么特点？ ##
 1. Redis数据库完全在内存中，使用磁盘仅用于持久性。
 1. 相比许多键值数据存储，Redis拥有一套较为丰富的数据类型。
 1. Redis可以将数据复制到任意数量的从服务器。
+
+
 ## Redis 优势？ ##
 1. 异常快速：Redis的速度非常快，每秒能执行约11万集合，每秒约81000+条记录。
 1.  支持丰富的数据类型：Redis支持最大多数开发人员已经知道像列表，集合，有序集合，散列数据类型。这使得它非常容易解决各种各样的问题，因为我们知道哪些问题是可以处理通过它的数据类型更好。
 1. 操作都是原子性：所有Redis操作是原子的，这保证了如果两个客户端同时访问的Redis服务器将获得更新后的值。
 1. 多功能实用工具：Redis是一个多实用的工具，可以在多个用例如缓存，消息，队列使用(Redis原生支持发布/订阅)，任何短暂的数据，应用程序，如Web应用程序会话，网页命中计数等。
+
+
 ## Redis 缺点？ ##
 1. 单线程
 1. 耗内存
+
+
 # 使用实例 #
+
 ## 引入jar包 ##
+
     <!-- spring data redis begin -->
     <dependency>
 	    <groupId>org.springframework.data</groupId>
@@ -40,7 +50,9 @@ redis是一个key-value存储系统。和Memcached类似，它支持存储的val
         <version>2.7.3</version>
     </dependency>
 	<!-- jedis end -->
+
 ## 配置xml ##
+
     <!-- redis连接池的配置 -->
     <bean id="jedisPoolConfig" class="redis.clients.jedis.JedisPoolConfig">
         <property name="maxIdle" value="${redis.pool.maxIdle}" />
@@ -74,7 +86,9 @@ redis是一个key-value存储系统。和Memcached类似，它支持存储的val
         </property>
         <property name="enableTransactionSupport" value="true"/>
     </bean>
+
 其中配置文件redis一些配置数据redis.properties如下：
+
     redis.pool.maxActive=30
     redis.pool.maxWait=10000
     redis.pool.maxIdle=10
@@ -83,7 +97,9 @@ redis是一个key-value存储系统。和Memcached类似，它支持存储的val
     redis.port=6379
     redis.timeout=5000
     redis.password=
+
 引入properties配置文件
+
 	<context:property-placeholder file-encoding="utf-8" location="classpath:redis.properties" ignore-unresolvable="true" />
 
     <bean id="configProperties"    class="org.springframework.beans.factory.config.PropertiesFactoryBean">
@@ -93,7 +109,9 @@ redis是一个key-value存储系统。和Memcached类似，它支持存储的val
             </list>
         </property>
     </bean>
+
 ## RedisDao 接口 ##
+
 
     package com.github.freeman.redis.dao;
     
@@ -169,7 +187,9 @@ redis是一个key-value存储系统。和Memcached类似，它支持存储的val
 	     */
 	    <T> T execute(RedisCallback<T> callback);
     }
+
 ## RedisDao接口的实现类 ##
+
 
     package com.github.freeman.redis.dao;
     
@@ -291,7 +311,11 @@ redis是一个key-value存储系统。和Memcached类似，它支持存储的val
 	    return redisTemplate.execute(callback);
 	    }
     }
+
+
 ## 单元测试 ##
+
+
 
     package com.github.freeman;
     
