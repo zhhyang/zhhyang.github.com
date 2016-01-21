@@ -121,6 +121,10 @@ tags:
     }
 
 ## 启动对@AspectJ注解的支持 ##
+> 到此为止，AutoRedisCached仅仅是位于Spring容器中的一个bean，即使它被AspectJ注解修饰，如果没有别的配置解释这个注解，并创建能够将它转换成切面的代理，则它不会被当做切面使用。
+如果你使用JavaConfig，则可以通过类级别的@EnableAspectJAutoProxy注解开启自动代理机制.
+如果你使用XML配置，则可以使用<aop: aspectj-autoproxy />元素开启AspectJ的自动代理机制
+
 > proxy-target-class="true"，因为我们是在接口的实现方法上面加的注解，所以要想在AutoRedisCached的arround方法中获取RedisCached注解的preKey的值，必须设置为true。
 
 > proxy-target-class属性值决定是基于接口的还是基于类的代理被创建。如果proxy-target-class 属性值被设置为true，那么基于类的代理将起作用（这时需要cglib库）。如果proxy-target-class属值被设置为false或者这个属性被省略，那么标准的JDK 基于接口的代理
