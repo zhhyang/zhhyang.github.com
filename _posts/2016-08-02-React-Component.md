@@ -12,79 +12,79 @@ tags:
 
 1. React.createClass({})
     
-    ```
-    
-    import React from 'react';
-    
-    var HelloMessage = React.createClass({
-      render: function() {
-        return <h1>Hello {this.props.name}</h1>;
-      }
-    });
-    
-    ReactDOM.render(
-      <HelloMessage name="John" />,
-      document.getElementById('example')
-    );
-    
-    ```
+```
+
+import React from 'react';
+
+var HelloMessage = React.createClass({
+  render: function() {
+    return <h1>Hello {this.props.name}</h1>;
+  }
+});
+
+ReactDOM.render(
+  <HelloMessage name="John" />,
+  document.getElementById('example')
+);
+
+```
     
 2. Class 方式
     
-    ```
-    import React, {Component, PropTypes} from 'react';
-    
-    class HelloMessage extends Component {
-        constructor(props, context) {
-            super(props, context);
-        }
-    
-        render() {
-            const {name} = this.props;
-            return (
-                <div>
-                    {name}
-                </div>
-            )
-        }
-    };
-    
-    HelloMessage.propTypes = {
-        name:PropTypes.string.isRequired
-    };
-    
-    export default HelloMessage;
-    
-    
-    
-    
-    ReactDOM.render(
-      <HelloMessage name="John" />,
-      document.getElementById('example')
-    );
-    
-    ```
+```
+import React, {Component, PropTypes} from 'react';
+
+class HelloMessage extends Component {
+    constructor(props, context) {
+        super(props, context);
+    }
+
+    render() {
+        const {name} = this.props;
+        return (
+            <div>
+                {name}
+            </div>
+        )
+    }
+};
+
+HelloMessage.propTypes = {
+    name:PropTypes.string.isRequired
+};
+
+export default HelloMessage;
+
+
+
+
+ReactDOM.render(
+  <HelloMessage name="John" />,
+  document.getElementById('example')
+);
+
+```
 
 
 3. React 在V0.14版本推出了新的实例创建方式 Stateless functional components
 
-    ```
-    // A functional component using an ES2015 (ES6) arrow function:
-    var Aquarium = (props) => {
-      var fish = getFish(props.species);
-      return <Tank>{fish}</Tank>;
-    };
+```
+// A functional component using an ES2015 (ES6) arrow function:
+var Aquarium = (props) => {
+  var fish = getFish(props.species);
+  return <Tank>{fish}</Tank>;
+};
 
-    // Or with destructuring and an implicit return, simply:
-    var Aquarium = ({species}) => (
-      <Tank>
-        {getFish(species)}
-      </Tank>
-    );
+// Or with destructuring and an implicit return, simply:
+var Aquarium = ({species}) => (
+  <Tank>
+    {getFish(species)}
+  </Tank>
+);
 
-    Then use: <Aquarium species="rainbowfish" />
+Then use: <Aquarium species="rainbowfish" />
 
-    ```
+```
     
 # 分析
 1. Stateless更适合简单显示组件
