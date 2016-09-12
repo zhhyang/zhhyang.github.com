@@ -89,4 +89,4 @@ Then use: <Aquarium species="rainbowfish" />
 # 分析
 1. Stateless更适合简单显示组件
 2. Class 方式更符合ES2015的使用习惯，复杂组件推荐使用此种写法
-3. createClass个人不大喜欢
+3. createClass比较古老的书写方式
