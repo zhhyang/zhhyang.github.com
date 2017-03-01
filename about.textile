@@ -15,7 +15,7 @@ h2. 软硬环境
 
 * 浏览器：Chrome，偶尔使用Firefox，迫于无奈用IE测试……
 
-h2. 关于zidaneaa.github.io
+h2. 关于zhhyang.github.io
 
 * 介绍业内流行、成熟的技术、工具，博主热衷分享研究成果
 
@@ -41,7 +41,7 @@ h2. Github项目
 
 花点时间浏览或许能发现你所需要的^_^
 
-* <a href='https://github.com/zidaneaa/'>https://github.com/zidaneaa/</a>
+* <a href='https://github.com/zhhyang/'>https://github.com/zhhyang/</a>
 
 h2. 关于版权
 
