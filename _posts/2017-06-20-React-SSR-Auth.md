@@ -49,6 +49,7 @@ app.listen(port, function(err) {
 ```
 
 
+
 ```jsx harmony
 
 import React from 'react'
@@ -67,12 +68,13 @@ export default function render (req, res) {
   const store = configureStore(initStore, history)
 
   match({routes: routes(store), location: req.url}, (error, redirectLocation, renderProps) => {
-    ...... // other codes 
+    // other codes 
   })
 
 }
 
 ```
+
 
 上述代码中关键的部分就是express应用中使用cookie-parse模块把cookie放到req.cookies中，在请求中再从req.cookies中获取token，
 这时候校验token是否有效。有效则把token存放到初始的store中
