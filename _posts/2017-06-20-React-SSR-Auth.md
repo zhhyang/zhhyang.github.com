@@ -10,14 +10,14 @@ tags:
 
 在使用React构建应用的过程中，如何判断当前的登录状态，是每个应用都要遇到的问题，而Client端渲染，常用的JWT模式，对于token的保存，一般都是保存在localStorage中，而在服务端渲染中，是没有localStorage的定义的
 
-```javascript
+```
  typeof localStorage === 'undefined' // true
 
 ```
 既然我们无法从localStorage中获取数据，那么我们只能从Cookie中获取
 
 
-```javascript
+```
     //after login 
     cookie.save('token', token)
 ```
@@ -25,7 +25,7 @@ tags:
 
 在服务端渲染的express应用中，我们要引入 [cookie-parser模块](https://github.com/expressjs/cookie-parser)
 
-```javascript
+```
 const express = require('express')
 const cookieParser = require('cookie-parser') ;
 const serverRender = require('./server.js')
@@ -50,7 +50,7 @@ app.listen(port, function(err) {
 
 
 
-```jsx harmony
+```
 import React from 'react'
 import { renderToString } from 'react-dom/server'
 import { RouterContext, match, createMemoryHistory } from 'react-router'
@@ -80,7 +80,7 @@ export default function render (req, res) {
 下一步则是在路由中添加登录验证钩子
 
 
-```jsx harmony
+```
 
 import React from 'react'
 import { Route, IndexRoute } from 'react-router'
@@ -125,7 +125,7 @@ export default (store) => {
 ```
 客户端判断登录状态的函数
 
-```js
+```
 import jwtDecode from 'jwt-decode'
 import moment from 'moment'
 import { getCookie, setCookie, removeCookie} from './authService'
