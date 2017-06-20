@@ -34,7 +34,7 @@ const app = express()
 
 app.use(cookieParser())
 
-...//other codes  
+//other codes  
 
 app.get('*', function (req, res, next) {
     serverRender.default(req, res);
@@ -51,7 +51,6 @@ app.listen(port, function(err) {
 
 
 ```jsx harmony
-
 import React from 'react'
 import { renderToString } from 'react-dom/server'
 import { RouterContext, match, createMemoryHistory } from 'react-router'
@@ -72,7 +71,6 @@ export default function render (req, res) {
   })
 
 }
-
 ```
 
 
@@ -81,7 +79,8 @@ export default function render (req, res) {
 
 下一步则是在路由中添加登录验证钩子
 
- ```jsx harmony
+
+```jsx harmony
 
 import React from 'react'
 import { Route, IndexRoute } from 'react-router'
@@ -124,6 +123,7 @@ export default (store) => {
 }
 
 ```
+客户端判断登录状态的函数
 
 ```js
 import jwtDecode from 'jwt-decode'
