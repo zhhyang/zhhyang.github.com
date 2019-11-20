@@ -1,0 +1,619 @@
+<?xml version="1.0" encoding="UTF-8"?><rss xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom" version="2.0"><channel><title><![CDATA[Freeman 的博客]]></title><description><![CDATA[A starter blog demonstrating what Gatsby can do.]]></description><link>https://gatsby-starter-blog-demo.netlify.com</link><generator>GatsbyJS</generator><lastBuildDate>Wed, 20 Nov 2019 07:55:48 GMT</lastBuildDate><item><title><![CDATA[React event inside map function]]></title><description><![CDATA[在使用React 渲染列表的时候，我们一般的操作如下 如果我们给渲染的item添加事件，代码如下： 或者 我们分析一下： 第一种方式，在onClick的时候使用匿名函数，每次点击都产生一个新的匿名函数，如果array有10000个数据，那么将产生1000…]]></description><link>https://gatsby-starter-blog-demo.netlify.com/react-event-inside-map-function/</link><guid isPermaLink="false">https://gatsby-starter-blog-demo.netlify.com/react-event-inside-map-function/</guid><pubDate>Mon, 04 Sep 2017 23:46:37 GMT</pubDate><content:encoded>&lt;p&gt;在使用React 渲染列表的时候，我们一般的操作如下&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;render(){
+  const {array} = this.props
+  return (
+    &amp;lt;div&amp;gt;
+      {
+        array.map(item =&amp;gt; 
+            &amp;lt;p key={item.id}&amp;gt;{item.name}&amp;lt;/p&amp;gt;
+        )
+      }
+    &amp;lt;/div&amp;gt; 
+  )
+}&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;如果我们给渲染的item添加事件，代码如下：&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;constructor(props){
+  super(props)
+  this.onClick = this.onClick.bind(this)
+}
+
+onClick(value){
+  console.log(value)
+}
+
+
+render(){
+  const {array} = this.props
+  return (
+    &amp;lt;div&amp;gt;
+      {
+        array.map(item =&amp;gt; 
+            &amp;lt;p key={item.id} onClick={() =&amp;gt; this.onClick(item.id)}&amp;gt;{item.name}&amp;lt;/p&amp;gt;
+        )
+      }
+    &amp;lt;/div&amp;gt; 
+  )
+}&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;或者&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;constructor(props){
+  super(props)
+}
+
+onClick(value){
+  console.log(value)
+}
+
+
+render(){
+  const {array} = this.props
+  return (
+    &amp;lt;div&amp;gt;
+      {
+        array.map(item =&amp;gt; 
+            &amp;lt;p key={item.id} onClick={this.onClick.bind(this,item.id)}&amp;gt;{item.name}&amp;lt;/p&amp;gt;
+        )
+      }
+    &amp;lt;/div&amp;gt; 
+  )
+}&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;我们分析一下：&lt;/p&gt;
+&lt;p&gt;第一种方式，在onClick的时候使用匿名函数，每次点击都产生一个新的匿名函数，如果array有10000个数据，那么将产生10000个匿名函数。
+第二种方式，bind() 会创建一个绑定了作用域的函数实例。于是，内存中存储了几乎一样的函数的一万个拷贝，这是一种巨大的浪费&lt;/p&gt;
+&lt;p&gt;所以我们在最第一种方式的基础上做一下改造&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;constructor(props){
+  super(props)
+  this.onClick = this.onClick.bind(this)
+}
+
+onClick(event){
+  const {id} = event.target
+  console.log(id)
+}
+
+
+render(){
+  const {array} = this.props
+  return (
+    &amp;lt;div&amp;gt;
+      {
+        array.map(item =&amp;gt; 
+            &amp;lt;p key={item.id} id={item.id} onClick={this.onClick}&amp;gt;{item.name}&amp;lt;/p&amp;gt;
+        )
+      }
+    &amp;lt;/div&amp;gt; 
+  )
+}&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;我们在构造方法中bind一次，每一个循环的p 都维护onClick的点击处理事件 this.onClick 根据每一个p上的props id 传递id，这样只产生了一个onClick函数&lt;/p&gt;
+&lt;p&gt;我们也可以利用ES2017 中的Class properties &lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;onClick = (event) =&amp;gt; {
+  const {id} = event.target
+  console.log(id)
+}
+
+
+render(){
+  const {array} = this.props
+  return (
+    &amp;lt;div&amp;gt;
+      {
+        array.map(item =&amp;gt; 
+            &amp;lt;p key={item.id} id={item.id} onClick={this.onClick}&amp;gt;{item.name}&amp;lt;/p&amp;gt;
+        )
+      }
+    &amp;lt;/div&amp;gt; 
+  )
+}&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;</content:encoded></item><item><title><![CDATA[React之组件的三种创建方式]]></title><description><![CDATA[最近在学习React.js，入门实例教程是学习的阮一峰的博客：React 入门实例教程 下面说的是React 三种创建组建的方式 React.createClass({}) Class 方式 React 在V0.14版本推出了新的实例创建方式 Stateless…]]></description><link>https://gatsby-starter-blog-demo.netlify.com/create-react-component/</link><guid isPermaLink="false">https://gatsby-starter-blog-demo.netlify.com/create-react-component/</guid><pubDate>Tue, 02 Aug 2016 23:46:37 GMT</pubDate><content:encoded>&lt;p&gt;最近在学习React.js，入门实例教程是学习的阮一峰的博客：&lt;a href=&quot;http://www.ruanyifeng.com/blog/2015/03/react.html&quot;&gt;React 入门实例教程&lt;/a&gt;&lt;/p&gt;
+&lt;h1&gt;下面说的是React 三种创建组建的方式&lt;/h1&gt;
+&lt;ol&gt;
+&lt;li&gt;React.createClass({})&lt;/li&gt;
+&lt;/ol&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;import React from &amp;#39;react&amp;#39;;
+
+var HelloMessage = React.createClass({
+  render: function() {
+    return &amp;lt;h1&amp;gt;Hello {this.props.name}&amp;lt;/h1&amp;gt;;
+  }
+});
+
+ReactDOM.render(
+  &amp;lt;HelloMessage name=&amp;quot;John&amp;quot; /&amp;gt;,
+  document.getElementById(&amp;#39;example&amp;#39;)
+);&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;ol start=&quot;2&quot;&gt;
+&lt;li&gt;Class 方式&lt;/li&gt;
+&lt;/ol&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;import React, {Component, PropTypes} from &amp;#39;react&amp;#39;;
+
+class HelloMessage extends Component {
+    constructor(props, context) {
+        super(props, context);
+    }
+
+    render() {
+        const {name} = this.props;
+        return (
+            &amp;lt;div&amp;gt;
+                {name}
+            &amp;lt;/div&amp;gt;
+        )
+    }
+};
+
+HelloMessage.propTypes = {
+    name:PropTypes.string.isRequired
+};
+
+export default HelloMessage;
+
+
+
+
+ReactDOM.render(
+  &amp;lt;HelloMessage name=&amp;quot;John&amp;quot; /&amp;gt;,
+  document.getElementById(&amp;#39;example&amp;#39;)
+);&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;ol start=&quot;3&quot;&gt;
+&lt;li&gt;React 在V0.14版本推出了新的实例创建方式 Stateless functional components&lt;/li&gt;
+&lt;/ol&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;// A functional component using an ES2015 (ES6) arrow function:
+var Aquarium = (props) =&amp;gt; {
+  var fish = getFish(props.species);
+  return &amp;lt;Tank&amp;gt;{fish}&amp;lt;/Tank&amp;gt;;
+};
+
+// Or with destructuring and an implicit return, simply:
+var Aquarium = ({species}) =&amp;gt; (
+  &amp;lt;Tank&amp;gt;
+    {getFish(species)}
+  &amp;lt;/Tank&amp;gt;
+);
+
+Then use: &amp;lt;Aquarium species=&amp;quot;rainbowfish&amp;quot; /&amp;gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;h1&gt;分析&lt;/h1&gt;
+&lt;ol&gt;
+&lt;li&gt;Stateless更适合简单显示组件&lt;/li&gt;
+&lt;li&gt;Class 方式更符合ES2015的使用习惯，复杂组件推荐使用此种写法&lt;/li&gt;
+&lt;li&gt;createClass比较古老的书写方式&lt;/li&gt;
+&lt;/ol&gt;</content:encoded></item><item><title><![CDATA[New Beginnings]]></title><description><![CDATA[Far far away, behind the word mountains, far from the countries Vokalia and
+Consonantia, there live the blind texts. Separated they live in…]]></description><link>https://gatsby-starter-blog-demo.netlify.com/new-beginnings/</link><guid isPermaLink="false">https://gatsby-starter-blog-demo.netlify.com/new-beginnings/</guid><pubDate>Thu, 28 May 2015 22:40:32 GMT</pubDate><content:encoded>&lt;p&gt;Far far away, behind the word mountains, far from the countries Vokalia and
+Consonantia, there live the blind texts. Separated they live in Bookmarksgrove
+right at the coast of the Semantics, a large language ocean. A small river named
+Duden flows by their place and supplies it with the necessary regelialia.&lt;/p&gt;
+&lt;h2&gt;On deer horse aboard tritely yikes and much&lt;/h2&gt;
+&lt;p&gt;The Big Oxmox advised her not to do so, because there were thousands of bad
+Commas, wild Question Marks and devious Semikoli, but the Little Blind Text
+didn’t listen. She packed her seven versalia, put her initial into the belt and
+made herself on the way.&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;This however showed weasel&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Well uncritical so misled&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;this is very interesting&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;Goodness much until that fluid owl&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;When she reached the first hills of the &lt;strong&gt;Italic Mountains&lt;/strong&gt;, she had a last
+view back on the skyline of her hometown &lt;em&gt;Bookmarksgrove&lt;/em&gt;, the headline of
+&lt;a href=&quot;http://google.com&quot;&gt;Alphabet Village&lt;/a&gt; and the subline of her own road, the Line
+Lane. Pityful a rhetoric question ran over her cheek, then she continued her
+way. On her way she met a copy.&lt;/p&gt;
+&lt;h3&gt;Overlaid the jeepers uselessly much excluding&lt;/h3&gt;
+&lt;p&gt;But nothing the copy said could convince her and so it didn’t take long until a
+few insidious Copy Writers ambushed her, made her drunk with
+&lt;a href=&quot;http://google.com&quot;&gt;Longe and Parole&lt;/a&gt; and dragged her into their agency, where
+they abused her for their projects again and again. And if she hasn’t been
+rewritten, then they are still using her.&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;Far far away, behind the word mountains, far from the countries Vokalia and
+Consonantia, there live the blind texts. Separated they live in Bookmarksgrove
+right at the coast of the Semantics, a large language ocean.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;It is a paradisematic country, in which roasted parts of sentences fly into your
+mouth. Even the all-powerful Pointing has no control about the blind texts it is
+an almost unorthographic life One day however a small line of blind text by the
+name of Lorem Ipsum decided to leave for the far World of Grammar.&lt;/p&gt;
+&lt;h3&gt;According a funnily until pre-set or arrogant well cheerful&lt;/h3&gt;
+&lt;p&gt;The Big Oxmox advised her not to do so, because there were thousands of bad
+Commas, wild Question Marks and devious Semikoli, but the Little Blind Text
+didn’t listen. She packed her seven versalia, put her initial into the belt and
+made herself on the way.&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;So baboon this&lt;/li&gt;
+&lt;li&gt;Mounted militant weasel gregariously admonishingly straightly hey&lt;/li&gt;
+&lt;li&gt;Dear foresaw hungry and much some overhung&lt;/li&gt;
+&lt;li&gt;Rash opossum less because less some amid besides yikes jeepers frenetic
+impassive fruitlessly shut&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;When she reached the first hills of the Italic Mountains, she had a last view
+back on the skyline of her hometown Bookmarksgrove, the headline of Alphabet
+Village and the subline of her own road, the Line Lane. Pityful a rhetoric
+question ran over her cheek, then she continued her way. On her way she met a
+copy.&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;The copy warned the Little Blind Text, that where it came from it would have
+been rewritten a thousand times and everything that was left from its origin
+would be the word “and” and the Little Blind Text should turn around and
+return to its own, safe country.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;But nothing the copy said could convince her and so it didn’t take long until a
+few insidious Copy Writers ambushed her, made her drunk with Longe and Parole
+and dragged her into their agency, where they abused her for their projects
+again and again. And if she hasn’t been rewritten, then they are still using
+her. Far far away, behind the word mountains, far from the countries Vokalia and
+Consonantia, there live the blind texts.&lt;/p&gt;
+&lt;h4&gt;Silent delightfully including because before one up barring chameleon&lt;/h4&gt;
+&lt;p&gt;Separated they live in Bookmarksgrove right at the coast of the Semantics, a
+large language ocean. A small river named Duden flows by their place and
+supplies it with the necessary regelialia. It is a paradisematic country, in
+which roasted parts of sentences fly into your mouth.&lt;/p&gt;
+&lt;p&gt;Even the all-powerful Pointing has no control about the blind texts it is an
+almost unorthographic life One day however a small line of blind text by the
+name of Lorem Ipsum decided to leave for the far World of Grammar. The Big Oxmox
+advised her not to do so, because there were thousands of bad Commas, wild
+Question Marks and devious Semikoli, but the Little Blind Text didn’t listen.&lt;/p&gt;
+&lt;h5&gt;Wherever far wow thus a squirrel raccoon jeez jaguar this from along&lt;/h5&gt;
+&lt;p&gt;She packed her seven versalia, put her initial into the belt and made herself on
+the way. When she reached the first hills of the Italic Mountains, she had a
+last view back on the skyline of her hometown Bookmarksgrove, the headline of
+Alphabet Village and the subline of her own road, the Line Lane. Pityful a
+rhetoric question ran over her cheek, then she continued her way. On her way she
+met a copy.&lt;/p&gt;
+&lt;h6&gt;Slapped cozy a that lightheartedly and far&lt;/h6&gt;
+&lt;p&gt;The copy warned the Little Blind Text, that where it came from it would have
+been rewritten a thousand times and everything that was left from its origin
+would be the word “and” and the Little Blind Text should turn around and return
+to its own, safe country. But nothing the copy said could convince her and so it
+didn’t take long until a few insidious Copy Writers ambushed her, made her drunk
+with Longe and Parole and dragged her into their agency, where they abused her
+for their projects again and again.&lt;/p&gt;</content:encoded></item><item><title><![CDATA[React服务端渲染如何读取登录状态]]></title><description><![CDATA[在使用React构建应用的过程中，如何判断当前的登录状态，是每个应用都要遇到的问题，而Client端渲染，常用的JWT模式，对于token的保存，一般都是保存在localStorage中，而在服务端渲染中，是没有localStorage…]]></description><link>https://gatsby-starter-blog-demo.netlify.com/react-ssr-auth/</link><guid isPermaLink="false">https://gatsby-starter-blog-demo.netlify.com/react-ssr-auth/</guid><pubDate>Wed, 06 May 2015 23:46:37 GMT</pubDate><content:encoded>&lt;p&gt;在使用React构建应用的过程中，如何判断当前的登录状态，是每个应用都要遇到的问题，而Client端渲染，常用的JWT模式，对于token的保存，一般都是保存在localStorage中，而在服务端渲染中，是没有localStorage的定义的&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt; typeof localStorage === &amp;#39;undefined&amp;#39; // true&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;既然我们无法从localStorage中获取数据，那么我们只能从Cookie中获取&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;    //after login 
+    cookie.save(&amp;#39;token&amp;#39;, token)&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;在服务端渲染的express应用中，我们要引入 &lt;a href=&quot;https://github.com/expressjs/cookie-parser&quot;&gt;cookie-parser模块&lt;/a&gt;&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;const express = require(&amp;#39;express&amp;#39;)
+const cookieParser = require(&amp;#39;cookie-parser&amp;#39;) ;
+const serverRender = require(&amp;#39;./server.js&amp;#39;)
+
+const app = express()
+
+app.use(cookieParser())
+
+//other codes  
+
+app.get(&amp;#39;*&amp;#39;, function (req, res, next) {
+    serverRender.default(req, res);
+})
+app.listen(port, function(err) {
+    if (err) {
+        console.error(err)
+    } else {
+        console.info(&amp;quot;==&amp;gt; 🌎  Listening on port %s. Open up http://localhost:%s/ in your browser.&amp;quot;, port, port)
+    }
+})&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;import React from &amp;#39;react&amp;#39;
+import { renderToString } from &amp;#39;react-dom/server&amp;#39;
+import { RouterContext, match, createMemoryHistory } from &amp;#39;react-router&amp;#39;
+import configureStore from &amp;#39;../store/configureStore&amp;#39;
+import routes from &amp;#39;../routes&amp;#39;
+
+export default function render (req, res) {
+  const token = req.cookies[&amp;#39;token&amp;#39;] // get token from req.cookies
+  let initStore = {}
+  if (token &amp;amp;&amp;amp; isExp(token)) { // token 存在并且是有效未超时的
+    initStore = {user: {token: token}}
+  }
+  const history = createMemoryHistory()
+  const store = configureStore(initStore, history)
+
+  match({routes: routes(store), location: req.url}, (error, redirectLocation, renderProps) =&amp;gt; {
+    // other codes 
+  })
+
+}&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;上述代码中关键的部分就是express应用中使用cookie-parse模块把cookie放到req.cookies中，在请求中再从req.cookies中获取token，
+这时候校验token是否有效。有效则把token存放到初始的store中&lt;/p&gt;
+&lt;p&gt;下一步则是在路由中添加登录验证钩子&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;import React from &amp;#39;react&amp;#39;
+import { Route, IndexRoute } from &amp;#39;react-router&amp;#39;
+import { redirectToLogin, redirectToBack,isExp } from &amp;#39;./utils/userUtils&amp;#39;
+import { isClient } from &amp;#39;./utils&amp;#39;
+import App from &amp;#39;./containers/App&amp;#39;
+import Login from &amp;#39;./views/login&amp;#39;
+import Index from &amp;#39;./views/Index&amp;#39;
+import NotFound from &amp;#39;./components/NotFound&amp;#39;
+import Mine from &amp;#39;./views/Mine&amp;#39;
+
+export default (store) =&amp;gt; {
+
+  const serverRequireAuth = (nextState, replace) =&amp;gt; {
+
+    const {user: {token}} = store.getState()
+    if (!token || !isExp(token)) {
+      replace(&amp;#39;/login&amp;#39;)
+    }
+  }
+
+  const serverRedirectAuth = (nextState, replace) =&amp;gt; {
+    const {user: {token}} = store.getState()
+    if (token &amp;amp;&amp;amp; isExp(token)) {
+      replace(&amp;#39;/&amp;#39;)
+    }
+  }
+  //客户端渲染和服务端渲染的校验方式可能会不同
+  const requireAuth = isClient() ? redirectToLogin : serverRequireAuth
+  const redirectAuth = isClient() ? redirectToBack : serverRedirectAuth
+
+  return (
+    &amp;lt;Route path=&amp;quot;/&amp;quot; component={App}&amp;gt;
+      &amp;lt;IndexRoute component={Index}/&amp;gt;
+      &amp;lt;Route path=&amp;quot;/login&amp;quot; component={Login} onEnter={redirectAuth}/&amp;gt;
+      &amp;lt;Route path=&amp;quot;mine&amp;quot; component={Mine} onEnter={requireAuth}/&amp;gt;
+      &amp;lt;Route path=&amp;quot;*&amp;quot; component={NotFound}/&amp;gt;
+    &amp;lt;/Route&amp;gt;
+  )
+}&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;客户端判断登录状态的函数&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;import jwtDecode from &amp;#39;jwt-decode&amp;#39;
+import moment from &amp;#39;moment&amp;#39;
+import { getCookie, setCookie, removeCookie} from &amp;#39;./authService&amp;#39;
+
+const getInfoFromToken = (token) =&amp;gt; {
+  return jwtDecode(token)
+}
+
+function checkTokenExpDiff (token) {
+  let tokenPayload = getInfoFromToken(token)
+  let expiry = moment.unix(tokenPayload.exp)
+  return expiry.diff(moment(), &amp;#39;seconds&amp;#39;)
+}
+/**
+ * 是否登录
+ * token 存在，并且有效期 &amp;gt; 0秒
+ * @returns {boolean} 已经登录返回true，否则返回false
+ */
+const isLogin = function () {
+  const apiToken = getCookie(&amp;#39;token&amp;#39;)
+  return apiToken &amp;amp;&amp;amp; isExp(apiToken)
+}
+/**
+ *
+ * @param apiToken
+ * @return {boolean} token有效返回true，否则返回false
+ */
+const isExp = function (apiToken) {
+  return checkTokenExpDiff(apiToken) &amp;gt; 0
+}
+
+
+const redirectToBack = (nextState, replace) =&amp;gt; {
+  //已经登录则不进入
+  if (isLogin()) {
+    replace(&amp;#39;/&amp;#39;)
+  }
+}
+const redirectToLogin = (nextState, replace) =&amp;gt; {
+  if (!isLogin()) {
+    replace(&amp;#39;/login&amp;#39;)
+  }
+}
+
+export {
+  redirectToLogin,
+  redirectToBack,
+}&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;</content:encoded></item><item><title><![CDATA[ESLint的使用]]></title><description><![CDATA[ESLint是一个语法规则和代码风格的检查工具，可以用来保证写出语法正确、风格统一的代码。 首先，安装ESLint 然后，安装Airbnb语法规则。 最后，在项目的根目录下新建一个.eslintrc文件，配置ESLint…]]></description><link>https://gatsby-starter-blog-demo.netlify.com/eslint-get-started/ESLint的使用/</link><guid isPermaLink="false">https://gatsby-starter-blog-demo.netlify.com/eslint-get-started/ESLint的使用/</guid><pubDate>Wed, 06 May 2015 23:46:37 GMT</pubDate><content:encoded>&lt;blockquote&gt;
+&lt;p&gt;ESLint是一个语法规则和代码风格的检查工具，可以用来保证写出语法正确、风格统一的代码。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;首先，安装ESLint&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;$ npm i -g eslint&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;然后，安装Airbnb语法规则。&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;$ npm i -g eslint-config-airbnb&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;最后，在项目的根目录下新建一个.eslintrc文件，配置ESLint。&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;{
+  &amp;quot;extends&amp;quot;: &amp;quot;eslint-config-airbnb&amp;quot;
+}&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;现在就可以检查，当前项目的代码是否符合预设的规则。&lt;/p&gt;
+&lt;p&gt;index.js文件的代码如下。&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;var unusued = &amp;#39;I have no purpose!&amp;#39;;
+
+function greet() {
+    var message = &amp;#39;Hello, World!&amp;#39;;
+    alert(message);
+}
+
+greet();&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;使用ESLint检查这个文件。&lt;/p&gt;
+&lt;div class=&quot;gatsby-highlight&quot; data-language=&quot;text&quot;&gt;&lt;pre class=&quot;language-text&quot;&gt;&lt;code class=&quot;language-text&quot;&gt;$ eslint index.js
+index.js
+  1:5  error  unusued is defined but never used                 no-unused-vars
+  4:5  error  Expected indentation of 2 characters but found 4  indent
+  5:5  error  Expected indentation of 2 characters but found 4  indent
+
+✖ 3 problems (3 errors, 0 warnings)&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;上面代码说明，原文件有三个错误，一个是定义了变量，却没有使用，另外两个是行首缩进为4个空格，而不是规定的2个空格。&lt;/p&gt;</content:encoded></item><item><title><![CDATA[package.json 字段全解析]]></title><description><![CDATA[Name 必须字段 小提示： 不要在name中包含js, node字样； 这个名字最终会是URL的一部分，命令行的参数，目录名，所以不能以点号或下划线开头； 这个名字可能在require()方法中被调用，所以应该尽可能短； Version 必须字段。 Description…]]></description><link>https://gatsby-starter-blog-demo.netlify.com/package-json/</link><guid isPermaLink="false">https://gatsby-starter-blog-demo.netlify.com/package-json/</guid><pubDate>Wed, 06 May 2015 23:46:37 GMT</pubDate><content:encoded>&lt;h2&gt;Name&lt;/h2&gt;
+&lt;blockquote&gt;
+&lt;p&gt;必须字段&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;小提示：&lt;/p&gt;
+&lt;p&gt;不要在name中包含js, node字样；&lt;/p&gt;
+&lt;p&gt;这个名字最终会是URL的一部分，命令行的参数，目录名，所以不能以点号或下划线开头；&lt;/p&gt;
+&lt;p&gt;这个名字可能在require()方法中被调用，所以应该尽可能短；&lt;/p&gt;
+&lt;h2&gt;Version&lt;/h2&gt;
+&lt;blockquote&gt;
+&lt;p&gt;必须字段。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h2&gt;Description&lt;/h2&gt;
+&lt;blockquote&gt;
+&lt;p&gt;可选字段，必须是字符串。npm search的时候会用到。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h2&gt;Keywords&lt;/h2&gt;
+&lt;blockquote&gt;
+&lt;p&gt;可选字段，字符串数组。npm search的时候会用到。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h2&gt;Homepage&lt;/h2&gt;
+&lt;blockquote&gt;
+&lt;p&gt;可选字段，没有&lt;a href=&quot;http://%E7%AD%89%E5%B8%A6%E5%8D%8F%E8%AE%AE%E5%89%8D%E7%BC%80%E7%9A%84URL%E3%80%82&quot;&gt;http://等带协议前缀的URL。&lt;/a&gt;&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h2&gt;Bugs&lt;/h2&gt;
+&lt;blockquote&gt;
+&lt;p&gt;可选字段，问题追踪系统的URL或邮箱地址；npm bugs用的上。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;{ “url” :”&lt;a href=&quot;http://github.com/owner/project/issues%22&quot;&gt;http://github.com/owner/project/issues”&lt;/a&gt;,&lt;/p&gt;
+&lt;p&gt; “email” :“project@hostname.com”&lt;/p&gt;
+&lt;p&gt;}&lt;/p&gt;
+&lt;h2&gt;License&lt;/h2&gt;
+&lt;blockquote&gt;
+&lt;p&gt;可选字段。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;如果是使用一个普遍的license，比如BSD-3-Clause或MIT，直接使用：&lt;/p&gt;
+&lt;p&gt;{ “license” : “BSD-3-Clause” }
+Author, contributors
+都是可选字段。author是一个人，contributors是一组人。&lt;/p&gt;
+&lt;p&gt;Author的格式如下：&lt;/p&gt;
+&lt;p&gt;{ “name” : “Barney Rubble”,
+“email” : “b@rubble.com”,
+“url” : ”&lt;a href=&quot;http://barnyrubble.tumblr.com/&quot;&gt;http://barnyrubble.tumblr.com/&lt;/a&gt;”
+}
+这种格式也可以：&lt;/p&gt;
+&lt;p&gt;“Barney Rubble &lt;a href=&quot;mailto:b@rubble.com&quot;&gt;b@rubble.com&lt;/a&gt; (&lt;a href=&quot;http://barnyrubble.tumblr.com/&quot;&gt;http://barnyrubble.tumblr.com/&lt;/a&gt;)”&lt;/p&gt;
+&lt;h2&gt;Files&lt;/h2&gt;
+&lt;blockquote&gt;
+&lt;p&gt;可选字段，项目包含的一组文件。如果是文件夹，文件夹下的文件也会被包含。如果需要把某些文件不包含在项目中，添加一个”.npmignore”文件。这个文件和”gitignore”类似。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h2&gt;Main&lt;/h2&gt;
+&lt;blockquote&gt;
+&lt;p&gt;可选字段。这个字段的值是你程序主入口模块的ID。如果其他用户需要你的包，当用户调用require()方法时，返回的就是这个模块的导出（exports）。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h2&gt;Bin&lt;/h2&gt;
+&lt;blockquote&gt;
+&lt;p&gt;可选字段。很多的包都会有执行文件需要安装到PATH中去。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;这个字段对应的是一个Map，每个元素对应一个{ 命令名：文件名 }。&lt;/p&gt;
+&lt;p&gt;{ “bin” : { “npm” : “./cli.js” } }
+Directories&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;用于指示包的目录结构：&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;Directories.lib&lt;/p&gt;
+&lt;p&gt;指示库文件的位置。&lt;/p&gt;
+&lt;p&gt;Directories.bin&lt;/p&gt;
+&lt;p&gt;和前面的bin是一样的，但如果前面已经有bin，那么这个就无效。&lt;/p&gt;
+&lt;p&gt;除了以上两个，还有Directories.doc&amp;#x26; Directories.man &amp;#x26; Directories.example。&lt;/p&gt;
+&lt;h2&gt;Repository&lt;/h2&gt;
+&lt;blockquote&gt;
+&lt;p&gt;可选字段。用于指示代码存放的位置。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;“repository” :
+{ “type” : “git”
+, “url” : ”&lt;a href=&quot;http://github.com/npm/npm.git&quot;&gt;http://github.com/npm/npm.git&lt;/a&gt;”
+}&lt;/p&gt;
+&lt;p&gt;“repository” :
+{ “type” : “svn”
+, “url” : ”&lt;a href=&quot;http://v8.googlecode.com/svn/trunk/&quot;&gt;http://v8.googlecode.com/svn/trunk/&lt;/a&gt;”
+}&lt;/p&gt;
+&lt;h2&gt;Scripts&lt;/h2&gt;
+&lt;blockquote&gt;
+&lt;p&gt;可选字段，object。Key是生命周期事件名，value是在事件点要跑的命令。参考npm-scripts。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h2&gt;Config&lt;/h2&gt;
+&lt;blockquote&gt;
+&lt;p&gt;可选字段，object。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;Config对象中的值在Scripts的整个周期中皆可用，专门用于给Scripts提供配置参数。&lt;/p&gt;
+&lt;h2&gt;Dependencies&lt;/h2&gt;
+&lt;blockquote&gt;
+&lt;p&gt;可选字段，指示当前包所依赖的其他包。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;{ “dependencies” :
+{ “foo” : “1.0.0 - 2.9999.9999”
+, “bar” : ”&gt;=1.0.2 &amp;#x3C;2.1.2”
+, “baz” : “&gt;1.0.2 &amp;#x3C;=2.3.4”
+, “boo” : “2.0.1”
+, “qux” : “&amp;#x3C;1.0.0 || &gt;=2.3.1 &amp;#x3C;2.4.5 || &gt;=2.5.2 &amp;#x3C;3.0.0”
+, “asd” : ”&lt;a href=&quot;http://asdf.com/asdf.tar.gz&quot;&gt;http://asdf.com/asdf.tar.gz&lt;/a&gt;”
+, “til” : “~1.2”
+, “elf” : “~1.2.3”
+, “two” : “2.x”
+, “thr” : “3.3.x”
+}
+}
+版本格式可以是下面任一种：&lt;/p&gt;
+&lt;p&gt;version 完全匹配&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;version 大于这个版本&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;blockquote&gt;
+&lt;p&gt;=version大于或等于这个版本&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;&amp;#x3C;version&lt;/p&gt;
+&lt;p&gt;&amp;#x3C;=version&lt;/p&gt;
+&lt;p&gt;~version 非常接近这个版本&lt;/p&gt;
+&lt;p&gt;^version 与当前版本兼容&lt;/p&gt;
+&lt;p&gt;1.2.x X代表任意数字，因此1.2.1, 1.2.3等都可以&lt;/p&gt;
+&lt;p&gt;&lt;a href=&quot;http://..&quot;&gt;http://..&lt;/a&gt;. Unix系统下使用的tarball的URL。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;任何版本都可以&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&quot;&quot;任何版本都可以&lt;/p&gt;
+&lt;p&gt;version1 - version2  等价于 &gt;=version1 &amp;#x3C;=version2.&lt;/p&gt;
+&lt;p&gt;range1 || range2 满足任意一个即可&lt;/p&gt;
+&lt;p&gt;git… Git地址&lt;/p&gt;
+&lt;p&gt;user/repo&lt;/p&gt;
+&lt;h2&gt;devDependencies&lt;/h2&gt;
+&lt;blockquote&gt;
+&lt;p&gt;可选字段。如果只需要下载使用某些模块，而不下载这些模块的测试和文档框架，放在这个下面比较不错。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h2&gt;peerDependencies&lt;/h2&gt;
+&lt;blockquote&gt;
+&lt;p&gt;可选字段。兼容性依赖。如果你的包是插件，适合这种方式。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h2&gt;bundledDependencies&lt;/h2&gt;
+&lt;blockquote&gt;
+&lt;p&gt;可选字段。发布包时同时打包的其他依赖。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h2&gt;optionalDependencies&lt;/h2&gt;
+&lt;blockquote&gt;
+&lt;p&gt;可选字段。如果你想在某些依赖即使没有找到，或则安装失败的情况下，npm都继续执行。那么这些依赖适合放在这里。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h2&gt;Engines&lt;/h2&gt;
+&lt;blockquote&gt;
+&lt;p&gt;可选字段。既可以指定node版本：&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;{ “engines” : {“node” : ”&gt;=0.10.3 &amp;#x3C;0.12” } }&lt;/p&gt;
+&lt;p&gt;也可以指定npm版本：&lt;/p&gt;
+&lt;p&gt;{ “engines” : {“npm” : “~1.0.20” } }&lt;/p&gt;
+&lt;h2&gt;engineStrick&lt;/h2&gt;
+&lt;blockquote&gt;
+&lt;p&gt;可选字段，布尔值。如果你肯定你的程序只能在制定的engine上运行，设置为true。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h2&gt;Os&lt;/h2&gt;
+&lt;blockquote&gt;
+&lt;p&gt;可选字段。指定模块可以在什么操作系统上运行：&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;“os” : [ “darwin”,“linux” ]&lt;/p&gt;
+&lt;p&gt;“os” : [ “!win32” ]&lt;/p&gt;
+&lt;p&gt;CPU&lt;/p&gt;
+&lt;blockquote&gt;
+&lt;p&gt;可选字段。指定CPU型号。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;“cpu” : [ “x64”,“ia32” ]&lt;/p&gt;
+&lt;p&gt;“cpu” : [ “!arm”,“!mips” ]&lt;/p&gt;
+&lt;h2&gt;preferGlobal&lt;/h2&gt;
+&lt;blockquote&gt;
+&lt;p&gt;可选字段，布尔值。如果你的包是个命令行应用程序，需要全局安装，就可以设为true。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h2&gt;Private&lt;/h2&gt;
+&lt;blockquote&gt;
+&lt;p&gt;可选字段，布尔值。如果private为true，npm会拒绝发布。这可以防止私有repositories不小心被发布出去。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h2&gt;publishConfig&lt;/h2&gt;
+&lt;blockquote&gt;
+&lt;p&gt;可选字段。发布时使用的配置值放这。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;p&gt;默认值
+·  “scripts”:{“start”: “node server.js”}&lt;/p&gt;
+&lt;p&gt;如果你的包里有server.js文件，npm默认将执行： node server.js.&lt;/p&gt;
+&lt;p&gt;·  “scripts”:{“preinstall”:“node-gyp rebuild”}&lt;/p&gt;
+&lt;p&gt;如果包里有binding.gyp，npm默认在preinstall命令时，使用node-gyp做编译。&lt;/p&gt;</content:encoded></item></channel></rss>
