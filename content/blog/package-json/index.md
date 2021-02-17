@@ -24,16 +24,16 @@ date: "2015-05-06T23:46:37.121Z"
 > 可选字段，字符串数组。npm search的时候会用到。
 
 ## Homepage
-> 可选字段，没有http://等带协议前缀的URL。
+> 可选字段，没有`http://`等带协议前缀的URL。
 
 ## Bugs
 > 可选字段，问题追踪系统的URL或邮箱地址；npm bugs用的上。
-
-{ "url" :"http://github.com/owner/project/issues",
-
- "email" :"project@hostname.com"
-
+``` 
+{ 
+  "url" :"http://github.com/owner/project/issues",
+  "email" :"project@hostname.com"
 }
+```
 
 ## License
 > 可选字段。
@@ -45,11 +45,13 @@ Author, contributors
 都是可选字段。author是一个人，contributors是一组人。
 
 Author的格式如下：
-
-{ "name" : "Barney Rubble",
+```
+{ 
+ "name" : "Barney Rubble",
  "email" : "b@rubble.com",
  "url" : "http://barnyrubble.tumblr.com/"
 }
+```
 这种格式也可以：
 
 "Barney Rubble <b@rubble.com> (http://barnyrubble.tumblr.com/)"

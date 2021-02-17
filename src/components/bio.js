@@ -6,7 +6,7 @@
  */
 
 import React from "react"
-import { useStaticQuery, graphql } from "gatsby"
+import { useStaticQuery, graphql, Link } from "gatsby"
 import Image from "gatsby-image"
 
 import { rhythm } from "../utils/typography"
@@ -54,11 +54,7 @@ const Bio = () => {
         }}
       />
       <p>
-        Written by <strong>{author}</strong>.
-        {` `}
-        <a href={`https://github.com/${social.github}`}>
-          You should follow him on Github
-        </a>
+        Written by <Link to={`/about`}><strong>{author}</strong></Link>.
       </p>
     </div>
   )
