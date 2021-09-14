@@ -70,6 +70,7 @@ class Layout extends React.Component {
         <p>
           <a href="http://www.beian.miit.gov.cn/" target="_blank" rel="noopener noreferrer">京ICP备19052401号</a>
         </p>
+        <p>「Powered by <a href="https://webify.cloudbase.net/" target="_blank" rel="noopener noreferrer">CloudBase Webify</a>」</p>
       </div>
     )
   }
